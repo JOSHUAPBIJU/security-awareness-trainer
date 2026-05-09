@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Awareness Trainer</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --bg2: #1a1d27; --bg3: #222535;
+    --text: #e8eaf0; --text2: #9096aa; --text3: #5a6070;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+    --teal: #1D9E75; --teal-bg: rgba(29,158,117,0.12); --teal-text: #5DCAA5;
+    --coral: #D85A30; --coral-bg: rgba(216,90,48,0.12); --coral-text: #F0997B;
+    --amber: #BA7517; --amber-bg: rgba(186,117,23,0.12); --amber-text: #EF9F27;
+    --green: #3B6D11; --green-bg: rgba(99,153,34,0.15); --green-text: #97C459;
+    --red: #A32D2D; --red-bg: rgba(226,75,74,0.15); --red-text: #F09595;
+    --blue-bg: rgba(55,138,221,0.12); --blue-text: #85B7EB;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+  #app { width: 100%; max-width: 680px; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 0.4rem; }
+  .logo-icon { width: 36px; height: 36px; background: var(--teal-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--teal-text); font-size: 18px; }
+  h1 { font-size: 20px; font-weight: 600; color: var(--text); }
+  .subtitle { font-size: 13px; color: var(--text2); margin-bottom: 1.75rem; line-height: 1.6; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.75rem; }
+  .stat-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1rem; text-align: center; }
+  .stat-num { font-size: 24px; font-weight: 600; color: var(--text); }
+  .stat-label { font-size: 11px; color: var(--text3); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .module-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .module-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: border-color 0.15s, background 0.15s; text-align: center; }
+  .module-card:hover { border-color: var(--border2); background: var(--bg3); }
+  .module-icon { font-size: 26px; margin-bottom: 10px; }
+  .module-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+  .module-desc { font-size: 11px; color: var(--text2); line-height: 1.55; }
+  .module-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 8px; font-weight: 500; }
+
+  .hint { font-size: 11px; color: var(--text3); text-align: center; }
+
+  .quiz-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+  .back-btn { font-size: 13px; color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 4px; background: none; border: none; padding: 0; }
+  .back-btn:hover { color: var(--text); }
+  .module-tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+
+  .progress-bar-outer { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 0.6rem; }
+  .progress-bar-inner { height: 3px; border-radius: 2px; transition: width 0.35s ease; }
+  .meta-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text3); margin-bottom: 1rem; }
+
+  .scenario-box { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; min-height: 130px; }
+  .scenario-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); margin-bottom: 10px; }
+  .scenario-text { font-size: 14px; color: var(--text); line-height: 1.75; white-space: pre-wrap; }
+
+  .options-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+  .option-btn { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 0.75rem 1rem; text-align: left; cursor: pointer; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 10px; transition: border-color 0.12s, background 0.12s; }
+  .option-btn:hover:not(:disabled) { border-color: var(--teal); background: var(--teal-bg); }
+  .option-btn.correct { background: var(--green-bg); border-color: var(--green-text); color: var(--green-text); }
+  .option-btn.wrong { background: var(--red-bg); border-color: var(--red-text); color: var(--red-text); }
+  .option-btn:disabled { cursor: default; }
+  .opt-letter { width: 22px; height: 22px; border-radius: 50%; border: 1px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; opacity: 0.7; }
+
+  .feedback-box { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem; font-size: 13px; color: var(--text2); line-height: 1.7; }
+  .feedback-label { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+  .feedback-label.good { color: var(--green-text); }
+  .feedback-label.bad { color: var(--red-text); }
+
+  .action-row { display: flex; justify-content: flex-end; }
+  button.primary { background: var(--teal); color: #fff; border: none; border-radius: var(--radius-sm); padding: 0.6rem 1.25rem; font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+  button.primary:hover { opacity: 0.85; }
+  button.ghost { background: transparent; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 0.6rem 1.25rem; font-size: 13px; color: var(--text); cursor: pointer; transition: background 0.12s; }
+  button.ghost:hover { background: var(--bg3); }
+
+  .loading-wrap { display: flex; align-items: center; gap: 8px; color: var(--text3); font-size: 13px; }
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--border2); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .result-center { text-align: center; padding: 1rem 0 1.5rem; }
+  .result-score { font-size: 52px; font-weight: 700; color: var(--text); }
+  .result-label { font-size: 14px; color: var(--text2); margin-top: 4px; }
+  .result-breakdown { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 1rem 0; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 13px; border-bottom: 0.5px solid var(--border); }
+  .result-row:last-child { border-bottom: none; }
+  .result-row span:first-child { color: var(--text2); }
+  .result-row span:last-child { font-weight: 500; }
+  .result-btns { display: flex; gap: 10px; justify-content: center; }
+
+  @media (max-width: 500px) {
+    .module-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(3,1fr); }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <div id="home" class="screen active">
+    <div class="logo-row">
+      <div class="logo-icon"><i class="ti ti-shield-lock" aria-hidden="true"></i></div>
+      <h1>Security Awareness Trainer</h1>
+    </div>
+    <p class="subtitle">AI-powered cybersecurity training. Each scenario is uniquely generated — no two sessions are the same.</p>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="total-score">0</div><div class="stat-label">Total score</div></div>
+      <div class="stat-card"><div class="stat-num" id="total-correct">0</div><div class="stat-label">Correct</div></div>
+      <div class="stat-card"><div class="stat-num" id="modules-done">0</div><div class="stat-label">Completed</div></div>
+    </div>
+
+    <div class="module-grid">
+      <div class="module-card" onclick="startModule('phishing')">
+        <div class="module-icon"><i class="ti ti-mail-x" style="font-size:26px;color:#F0997B" aria-hidden="true"></i></div>
+        <div class="module-title">Phishing Detection</div>
+        <div class="module-desc">Identify malicious emails, fake links, and spoofed senders</div>
+        <span class="module-badge" style="background:var(--coral-bg);color:var(--coral-text)">5 scenarios</span>
+      </div>
+      <div class="module-card" onclick="startModule('passwords')">
+        <div class="module-icon"><i class="ti ti-lock" style="font-size:26px;color:#5DCAA5" aria-hidden="true"></i></div>
+        <div class="module-title">Password Security</div>
+        <div class="module-desc">Spot weak practices, evaluate strength, and pick safe strategies</div>
+        <span class="module-badge" style="background:var(--teal-bg);color:var(--teal-text)">5 scenarios</span>
+      </div>
+      <div class="module-card" onclick="startModule('social')">
+        <div class="module-icon"><i class="ti ti-users" style="font-size:26px;color:#EF9F27" aria-hidden="true"></i></div>
+        <div class="module-title">Social Engineering</div>
+        <div class="module-desc">Recognize manipulation, pretexting, urgency tactics, and impersonation</div>
+        <span class="module-badge" style="background:var(--amber-bg);color:var(--amber-text)">5 scenarios</span>
+      </div>
+    </div>
+    <p class="hint">Powered by Claude AI &mdash; scenarios adapt to keep training fresh every session</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="screen">
+    <div class="quiz-header">
+      <button class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Home</button>
+      <span id="quiz-tag" class="module-tag"></span>
+    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar" style="width:0%"></div></div>
+    <div class="meta-row">
+      <span id="progress-text">Question 1 of 5</span>
+      <span id="score-text">Score: 0</span>
+    </div>
+    <div class="scenario-box">
+      <div class="scenario-label" id="scenario-label">Scenario</div>
+      <div class="scenario-text" id="scenario-text">
+        <div class="loading-wrap"><div class="spinner"></div> Generating scenario...</div>
+      </div>
+    </div>
+    <div class="options-list" id="options-list"></div>
+    <div class="feedback-box" id="feedback-box" style="display:none">
+      <div class="feedback-label" id="feedback-label"></div>
+      <div id="feedback-text"></div>
+    </div>
+    <div class="action-row">
+      <button class="primary" id="next-btn" style="display:none" onclick="nextQuestion()">Next question &rarr;</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" class="screen">
+    <div class="result-center">
+      <p style="font-size:13px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">Module complete</p>
+      <div class="result-score" id="result-score">0/5</div>
+      <div class="result-label" id="result-label"></div>
+    </div>
+    <div class="result-breakdown" id="result-breakdown"></div>
+    <div class="result-btns">
+      <button class="ghost" onclick="retryModule()">Retry module</button>
+      <button class="primary" onclick="goHome()">Back to home</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const MODULES = {
+  phishing: {
+    label: 'Phishing Detection',
+    color: '#F0997B', bg: 'rgba(216,90,48,0.12)',
+    barColor: '#D85A30',
+    prompt: `You are a cybersecurity awareness trainer. Generate a unique phishing detection scenario.
+Return ONLY valid JSON (no markdown, no backticks, no preamble):
+{"scenario":"A realistic email or message scenario (3-5 sentences). Include sender details, subject line, and body. Mix legitimate and phishing scenarios.","question":"What should the user do?","options":["Option A","Option B","Option C","Option D"],"correct":0,"explanation":"2-3 sentences explaining why the correct answer is right and what red flags exist."}
+Vary the correct index (0-3) across questions. Include a mix of phishing and legitimate scenarios.`
+  },
+  passwords: {
+    label: 'Password Security',
+    color: '#5DCAA5', bg: 'rgba(29,158,117,0.12)',
+    barColor: '#1D9E75',
+    prompt: `You are a cybersecurity awareness trainer. Generate a unique password security scenario.
+Return ONLY valid JSON (no markdown, no backticks, no preamble):
+{"scenario":"A realistic workplace scenario about passwords, credentials, 2FA, or account security (3-4 sentences).","question":"What is the best course of action?","options":["Option A","Option B","Option C","Option D"],"correct":0,"explanation":"2-3 sentences explaining the correct answer and why the other options are risky."}
+Vary the correct index (0-3) across questions.`
+  },
+  social: {
+    label: 'Social Engineering',
+    color: '#EF9F27', bg: 'rgba(186,117,23,0.12)',
+    barColor: '#BA7517',
+    prompt: `You are a cybersecurity awareness trainer. Generate a unique social engineering scenario.
+Return ONLY valid JSON (no markdown, no backticks, no preamble):
+{"scenario":"A realistic scenario involving manipulation, pretexting, impersonation, urgency, or baiting (3-5 sentences). Could be phone, email, or in-person.","question":"How should the target respond?","options":["Option A","Option B","Option C","Option D"],"correct":0,"explanation":"2-3 sentences identifying the attack technique and why the correct response is safe."}
+Vary the correct index (0-3). Mix obvious and subtle attacks.`
+  }
+};
+
+let state = { module:null, questions:[], current:0, score:0, totalScore:0, totalCorrect:0, modulesDone:0 };
+
+function show(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+function goHome() {
+  document.getElementById('total-score').textContent = state.totalScore;
+  document.getElementById('total-correct').textContent = state.totalCorrect;
+  document.getElementById('modules-done').textContent = state.modulesDone;
+  show('home');
+}
+
+function startModule(mod) {
+  state.module=mod; state.questions=[]; state.current=0; state.score=0;
+  const m=MODULES[mod];
+  const tag=document.getElementById('quiz-tag');
+  tag.textContent=m.label; tag.style.background=m.bg; tag.style.color=m.color;
+  document.getElementById('progress-bar').style.background=m.barColor;
+  show('quiz'); loadQuestion();
+}
+
+function retryModule() { startModule(state.module); }
+
+function updateProgress() {
+  const q=state.current+1;
+  document.getElementById('progress-text').textContent=`Question ${q} of 5`;
+  document.getElementById('score-text').textContent=`Score: ${state.score}`;
+  document.getElementById('progress-bar').style.width=`${(state.current/5)*100}%`;
+}
+
+async function loadQuestion() {
+  updateProgress();
+  document.getElementById('scenario-label').textContent='Scenario';
+  document.getElementById('scenario-text').innerHTML='<div class="loading-wrap"><div class="spinner"></div> Generating scenario...</div>';
+  document.getElementById('options-list').innerHTML='';
+  document.getElementById('feedback-box').style.display='none';
+  document.getElementById('next-btn').style.display='none';
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:MODULES[state.module].prompt}]})
+    });
+    const data=await res.json();
+    const raw=data.content.map(c=>c.text||'').join('');
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const q=JSON.parse(clean);
+    state.questions.push(q);
+    renderQuestion(q);
+  } catch(e) {
+    document.getElementById('scenario-text').textContent='Could not load scenario. Please check your connection and try again.';
+  }
+}
+
+function renderQuestion(q) {
+  document.getElementById('scenario-text').textContent=q.scenario;
+  document.getElementById('scenario-label').textContent=q.question;
+  const list=document.getElementById('options-list');
+  list.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    const btn=document.createElement('button');
+    btn.className='option-btn';
+    btn.innerHTML=`<span class="opt-letter">${l}</span>${q.options[i]}`;
+    btn.onclick=()=>selectAnswer(i,q.correct,q.explanation);
+    list.appendChild(btn);
+  });
+}
+
+function selectAnswer(selected,correct,explanation) {
+  document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.option-btn')[correct].classList.add('correct');
+  const isCorrect=selected===correct;
+  if(!isCorrect) document.querySelectorAll('.option-btn')[selected].classList.add('wrong');
+  if(isCorrect) state.score++;
+  document.getElementById('score-text').textContent=`Score: ${state.score}`;
+  const fb=document.getElementById('feedback-box');
+  fb.style.display='block';
+  const lbl=document.getElementById('feedback-label');
+  lbl.textContent=isCorrect?'✓ Correct':'✗ Incorrect';
+  lbl.className='feedback-label '+(isCorrect?'good':'bad');
+  document.getElementById('feedback-text').textContent=explanation;
+  const nb=document.getElementById('next-btn');
+  nb.style.display='inline-block';
+  nb.textContent=state.current>=4?'See results →':'Next question →';
+}
+
+function nextQuestion() {
+  state.current++;
+  if(state.current>=5) showResults(); else loadQuestion();
+}
+
+function showResults() {
+  state.totalScore+=state.score; state.totalCorrect+=state.score; state.modulesDone++;
+  document.getElementById('result-score').textContent=`${state.score}/5`;
+  const pct=state.score/5;
+  document.getElementById('result-label').textContent=pct>=0.8?'Excellent — strong security awareness.':pct>=0.6?'Good effort — review the missed scenarios.':'Needs improvement — please retry this module.';
+  const m=MODULES[state.module];
+  document.getElementById('result-breakdown').innerHTML=`
+    <div class="result-row"><span>Module</span><span style="color:${m.color}">${m.label}</span></div>
+    <div class="result-row"><span>Correct answers</span><span style="color:var(--green-text)">${state.score} of 5</span></div>
+    <div class="result-row"><span>Accuracy</span><span>${Math.round(pct*100)}%</span></div>
+    <div class="result-row"><span>Session total score</span><span>${state.totalScore}</span></div>`;
+  show('results');
+}
+</script>
+</body>
+</html>
